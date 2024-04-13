@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using Task1.Models;
 
 namespace Task1.Controllers
 {
@@ -10,11 +13,19 @@ namespace Task1.Controllers
         public RegistrationController(DateValidator validator)
         {
             _validator = validator;
+            
+            
         }
 
         public IActionResult Index()
         {
-            return View();
+            var model = new RegistrationModel()
+            {
+                WantedDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day),
+            };
+            model.SelectedValue = model.Options[1].Value;
+
+            return View(model);
         }
 
 
@@ -30,9 +41,7 @@ namespace Task1.Controllers
             }
             else
             {
-                // якщо модель містить значення, що суперечать бізнес правилам - повертаємо те ж саме подання з неправильними даними
-                // для того, щоб користувач міг їх виправити
-                foreach(var error in validRes.Errors)
+                foreach (var error in validRes.Errors)
                 {
                     ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
